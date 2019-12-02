@@ -633,6 +633,7 @@ void ScriptingCore::createGlobalContext() {
 
 	// 这里给JSRuntime分配了32M的内存,应用程序使用的变量、对象和上下文（上下文）都保存在RunTime中。
     _rt = JS_NewRuntime(32L * 1024L * 1024L);
+	// 设置gc条件
     JS_SetGCParameter(_rt, JSGCParamKey::JSGC_MAX_BYTES, 0xffffffff);
     JS_SetGCParameter(_rt, JSGCParamKey::JSGC_MODE, JSGC_MODE_COMPARTMENT);
 
@@ -653,6 +654,7 @@ void ScriptingCore::createGlobalContext() {
     JS::RuntimeOptionsRef(_rt).setIon(true);
     JS::RuntimeOptionsRef(_rt).setBaseline(true);
 
+	// 这里设置js层的报错回调
     JS_SetErrorReporter(_cx, ScriptingCore::reportError);
 #if defined(JS_GC_ZEAL) && defined(DEBUG)
     JS_SetGCZeal(this->_cx, 2, JS_DEFAULT_ZEAL_FREQ);
@@ -661,9 +663,10 @@ void ScriptingCore::createGlobalContext() {
 	// 设置垃圾回收器的回调
     JS_SetGCCallback(_rt, onGarbageCollect, nullptr);
 
-	//创建一个全局对象
+	//创建一个全局对象,它是在JSRuntime本身中注册，不会被gc回收？
     _global = new (std::nothrow) JS::PersistentRootedObject(_rt, newGlobalObject(_cx, false));
-    JS::RootedObject global(_cx, _global->get());
+    
+	JS::RootedObject global(_cx, _global->get());
 
     // Removed in Firefox v34
     js::SetDefaultObjectForContext(_cx, global);
