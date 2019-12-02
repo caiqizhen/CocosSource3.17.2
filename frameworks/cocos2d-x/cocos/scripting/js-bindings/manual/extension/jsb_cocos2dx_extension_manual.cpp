@@ -1040,8 +1040,10 @@ void register_all_cocos2dx_extension_manual(JSContext* cx, JS::HandleObject glob
     tmpObj.set(tmpVal.toObjectOrNull());
     JS_DefineFunction(cx, tmpObj, "create", js_cocos2dx_CCTableView_create, 3, JSPROP_READONLY | JSPROP_PERMANENT);
 
+	//这个是用于下载远程图片，下载成功或者失败会回调传入的函数，函数参数为（Boolean,Texture2D）
     JS_DefineFunction(cx, jsbObj, "loadRemoteImg", js_load_remote_image, 2, JSPROP_READONLY | JSPROP_PERMANENT);
 
+	//定义了全局的performance对象，performance.now获取的是引擎启动到现在经过的时间
     JS::RootedObject performance(cx);
     get_or_create_js_obj(cx, global, "performance", &performance);
     JS_DefineFunction(cx, performance, "now", js_performance_now, 0, JSPROP_ENUMERATE | JSPROP_PERMANENT);

@@ -30,11 +30,13 @@
 // system
 #include "scripting/js-bindings/manual/localstorage/js_bindings_system_functions.h"
 
-
+/*
+* 为cc创建sys属性，为sys创建localStorage属性，并初始化sqlite数据库
+*/
 void jsb_register_system( JSContext *_cx,  JS::HandleObject object)
 {
     //
-    // sys
+    // sys 创建cc下面的sys属性
     //
     JS::RootedObject proto(_cx);
     JS::RootedObject parent(_cx);
@@ -59,6 +61,7 @@ void jsb_register_system( JSContext *_cx,  JS::HandleObject object)
     //NSString *fullpath = [path stringByAppendingPathComponent:@"jsb.sqlite"];
     std::string strFilePath = cocos2d::FileUtils::getInstance()->getWritablePath();
     strFilePath += "/jsb.sqlite";
+	//初始化sqlite数据库
     localStorageInit(strFilePath);
     
 }

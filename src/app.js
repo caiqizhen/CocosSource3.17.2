@@ -36,6 +36,14 @@ var HelloWorldLayer = cc.Layer.extend({
         // ask the window size
         var size = cc.winSize;
 
+        var lg = new cc.LayerGradient(cc.color(0, 0, 0, 255), cc.color(98, 99, 117, 255));
+        var nodeGrid = new cc.NodeGrid();
+        nodeGrid.addChild(lg);
+        this.addChild(nodeGrid, 0, "1");
+        // 波浪动画
+        var waves = cc.waves(5, cc.size(15, 10), 5, 20, true, false);
+        nodeGrid.runAction(waves.repeatForever());
+
         /////////////////////////////
         // 3. add your codes below...
         // add a label shows "Hello World"
@@ -57,12 +65,15 @@ var HelloWorldLayer = cc.Layer.extend({
 
         cc.log("is ref: " + cc.Texture2D.prototype.__is_ref);
         cc.log("native obj: " + cc.Texture2D.prototype.__nativeObj);
-        var lg = new cc.LayerGradient(cc.color(0, 0, 0, 255), cc.color(98, 99, 117, 255));
-        var nodeGrid = new cc.NodeGrid();
-        nodeGrid.addChild(lg);
-        this.addChild(nodeGrid, 0, "1");
-        var waves = cc.waves(5, cc.size(15, 10), 5, 20, true, false);
-        nodeGrid.runAction(waves.repeatForever());
+
+        console.log("aaaa");
+        console.log(performance.now());
+
+
+        jsb.loadRemoteImg("http://qincoin.com.cn/jlqp_ip_group_tg_preproduct/image/ad/ad_1.png", function(isSuccess, texture){
+            cc.log("load success:", isSuccess);
+            this.sprite.setTexture(texture);
+        }.bind(this));
         return true;
     }
 });

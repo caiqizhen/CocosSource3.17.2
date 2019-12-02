@@ -128,6 +128,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     sc->addRegisterCallback(jsb_register_system);
 
     // extension can be commented out to reduce the package
+	// 如果需要减小包可以注释掉这代码，但是这里面包含了TableView，ScrollView
     sc->addRegisterCallback(register_all_cocos2dx_extension);
     sc->addRegisterCallback(register_all_cocos2dx_extension_manual);
 
