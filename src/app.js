@@ -55,6 +55,14 @@ var HelloWorldLayer = cc.Layer.extend({
         });
         this.addChild(this.sprite, 0);
 
+        cc.log("is ref: " + cc.Texture2D.prototype.__is_ref);
+        cc.log("native obj: " + cc.Texture2D.prototype.__nativeObj);
+        var lg = new cc.LayerGradient(cc.color(0, 0, 0, 255), cc.color(98, 99, 117, 255));
+        var nodeGrid = new cc.NodeGrid();
+        nodeGrid.addChild(lg);
+        this.addChild(nodeGrid, 0, "1");
+        var waves = cc.waves(5, cc.size(15, 10), 5, 20, true, false);
+        nodeGrid.runAction(waves.repeatForever());
         return true;
     }
 });

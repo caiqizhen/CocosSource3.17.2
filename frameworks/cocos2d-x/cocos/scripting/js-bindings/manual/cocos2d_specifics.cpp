@@ -6020,6 +6020,7 @@ void register_cocos2dx_js_core(JSContext* cx, JS::HandleObject global)
     JS::RootedObject jsbObj(cx);
     JS::RootedValue tmpVal(cx);
     JS::RootedObject tmpObj(cx);
+	//创建cc和jsb两个命名空间
     get_or_create_js_obj(cx, global, "cc", &ccObj);
     get_or_create_js_obj(cx, global, "jsb", &jsbObj);
 
@@ -6031,7 +6032,7 @@ void register_cocos2dx_js_core(JSContext* cx, JS::HandleObject global)
     JS_SetProperty(cx, jsbObj, "ENABLE_GC_FOR_NATIVE_OBJECTS", falseVal);
 #endif
 
-    // Memory management related
+    // Memory management related 内存管理相关
     jsb_register_RefFinalizeHook(cx, jsbObj);
     jsb_register_ObjFinalizeHook(cx, jsbObj);
 

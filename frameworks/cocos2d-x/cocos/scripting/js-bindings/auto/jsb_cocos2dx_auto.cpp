@@ -5547,6 +5547,7 @@ void js_register_cocos2dx_Node(JSContext *cx, JS::HandleObject global) {
         JS_FS_END
     };
 
+	// 静态函数
     static JSFunctionSpec st_funcs[] = {
         JS_FN("create", js_cocos2dx_Node_create, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getAttachedNodeCount", js_cocos2dx_Node_getAttachedNodeCount, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
@@ -9144,6 +9145,7 @@ void js_register_cocos2dx_Action(JSContext *cx, JS::HandleObject global) {
 
     JS::RootedObject proto(cx, jsb_cocos2d_Action_prototype);
     JS::RootedValue className(cx, std_string_to_jsval(cx, "Action"));
+	//设置proto的方法
     JS_SetProperty(cx, proto, "_className", className);
     JS_SetProperty(cx, proto, "__nativeObj", JS::TrueHandleValue);
     JS_SetProperty(cx, proto, "__is_ref", JS::TrueHandleValue);
@@ -9220,11 +9222,12 @@ void js_register_cocos2dx_FiniteTimeAction(JSContext *cx, JS::HandleObject globa
     JSFunctionSpec *st_funcs = NULL;
 
     JS::RootedObject parent_proto(cx, jsb_cocos2d_Action_prototype);
+
     jsb_cocos2d_FiniteTimeAction_prototype = JS_InitClass(
         cx, global,
-        parent_proto,
+        parent_proto,//指向要用作原型的对象的指针。JS_InitClass总是创建一个新的原型对象，用作类实例的__proto__
         jsb_cocos2d_FiniteTimeAction_class,
-        empty_constructor, 0,
+        empty_constructor, 0,//构造函数和构造函数的参数个数
         properties,
         funcs,
         NULL, // no static properties
@@ -33782,6 +33785,7 @@ void js_register_cocos2dx_AtlasNode(JSContext *cx, JS::HandleObject global) {
     JS::RootedObject proto(cx, jsb_cocos2d_AtlasNode_prototype);
     JS::RootedValue className(cx, std_string_to_jsval(cx, "AtlasNode"));
     JS_SetProperty(cx, proto, "_className", className);
+	//boolean值
     JS_SetProperty(cx, proto, "__nativeObj", JS::TrueHandleValue);
     JS_SetProperty(cx, proto, "__is_ref", JS::TrueHandleValue);
     // add the proto and JSClass to the type->js info hash table
@@ -59936,22 +59940,31 @@ bool js_cocos2dx_RenderState_finalize(JSContext *cx, uint32_t argc, jsval *vp)
 
 
 void js_register_cocos2dx_RenderState(JSContext *cx, JS::HandleObject global) {
+	//分配一个JSClass大小的内存
     jsb_cocos2d_RenderState_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_RenderState_class->name = "RenderState";
+	//添加属性回调函数
     jsb_cocos2d_RenderState_class->addProperty = JS_PropertyStub;
     jsb_cocos2d_RenderState_class->delProperty = JS_DeletePropertyStub;
     jsb_cocos2d_RenderState_class->getProperty = JS_PropertyStub;
     jsb_cocos2d_RenderState_class->setProperty = JS_StrictPropertyStub;
+	// 遍历属性回调函数
     jsb_cocos2d_RenderState_class->enumerate = JS_EnumerateStub;
+	// 解析属性回调函数
     jsb_cocos2d_RenderState_class->resolve = JS_ResolveStub;
+	// 转换属性回调函数（默认就好）
     jsb_cocos2d_RenderState_class->convert = JS_ConvertStub;
+	// 拥有2个临时持有对象的槽位，方便持有回调函数的引用，比如点击事件
     jsb_cocos2d_RenderState_class->flags = JSCLASS_HAS_RESERVED_SLOTS(2);
 
+	//声明类成员属性，说明没有类成员属性
     static JSPropertySpec properties[] = {
         JS_PS_END
     };
 
+	//声明类成员函数
     static JSFunctionSpec funcs[] = {
+		//参数：函数在JS中得名称，函数的Native回调函数，参数个数，不可以删除|可以遍历
         JS_FN("setTexture", js_cocos2dx_RenderState_setTexture, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getTopmost", js_cocos2dx_RenderState_getTopmost, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getTexture", js_cocos2dx_RenderState_getTexture, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
@@ -59962,24 +59975,28 @@ void js_register_cocos2dx_RenderState(JSContext *cx, JS::HandleObject global) {
         JS_FS_END
     };
 
+	//静态函数
     static JSFunctionSpec st_funcs[] = {
         JS_FN("initialize", js_cocos2dx_RenderState_initialize, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("finalize", js_cocos2dx_RenderState_finalize, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FS_END
     };
 
+	//有了函数和属性的声明后，我们把属性和函数注入到声明的JSClass中
     jsb_cocos2d_RenderState_prototype = JS_InitClass(
         cx, global,
         JS::NullPtr(),
         jsb_cocos2d_RenderState_class,
-        dummy_constructor<cocos2d::RenderState>, 0, // no constructor
+        dummy_constructor<cocos2d::RenderState>, 0, // no constructor 没有构造函数,调用会报错
         properties,
         funcs,
-        NULL, // no static properties
+        NULL, // no static properties 静态属性
         st_funcs);
 
+	//创建proto对象
     JS::RootedObject proto(cx, jsb_cocos2d_RenderState_prototype);
     JS::RootedValue className(cx, std_string_to_jsval(cx, "RenderState"));
+	//为proto设置方法
     JS_SetProperty(cx, proto, "_className", className);
     JS_SetProperty(cx, proto, "__nativeObj", JS::TrueHandleValue);
     JS_SetProperty(cx, proto, "__is_ref", JS::TrueHandleValue);
@@ -60862,6 +60879,7 @@ void js_register_cocos2dx_Material(JSContext *cx, JS::HandleObject global) {
         JS_FS_END
     };
 
+	// 设置父类的__proto__，即继承自谁。
     JS::RootedObject parent_proto(cx, jsb_cocos2d_RenderState_prototype);
     jsb_cocos2d_Material_prototype = JS_InitClass(
         cx, global,
@@ -67476,7 +67494,7 @@ void js_register_cocos2dx_ComponentJS(JSContext *cx, JS::HandleObject global) {
 }
 
 void register_all_cocos2dx(JSContext* cx, JS::HandleObject obj) {
-    // Get the ns
+    // Get the ns 获取cc对象
     JS::RootedObject ns(cx);
     get_or_create_js_obj(cx, obj, "cc", &ns);
 

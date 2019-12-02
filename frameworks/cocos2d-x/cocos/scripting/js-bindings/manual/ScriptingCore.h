@@ -593,14 +593,19 @@ js_type_class_t *jsb_register_class(JSContext *cx, JSClass *jsClass, JS::HandleO
     {
         JS::RootedObject protoRoot(cx, proto);
         JS::RootedObject protoParentRoot(cx, parentProto);
+		// 创建js_type_class_t对象,并将jsclass赋值给p的属性jsclass
         p = (js_type_class_t *)malloc(sizeof(js_type_class_t));
         memset(p, 0, sizeof(js_type_class_t));
         p->jsclass = jsClass;
+
+		// 将参数proto封装后设置为p的proto，有可能为空。
         auto persistentProtoRoot = new (std::nothrow) JS::PersistentRootedObject(cx, protoRoot);
         p->proto.set(persistentProtoRoot);
         
+		// 将参数parentProto封装后设置为p的parentProto，有可能为空。
         auto persistentProtoParentRoot = new (std::nothrow) JS::PersistentRootedObject(cx, protoParentRoot);
         p->parentProto.set(persistentProtoParentRoot);
+		// 放置到无续的map中
         _js_global_type_map.insert(std::make_pair(typeName, p));
     }
     return p;

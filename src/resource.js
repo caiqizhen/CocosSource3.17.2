@@ -23,7 +23,7 @@
  ****************************************************************************/
 
 var res = {
-    HelloWorld_png : "res/HelloWorld.png",
+    HelloWorld_png : "logo.png",
 };
 
 var g_resources = [];

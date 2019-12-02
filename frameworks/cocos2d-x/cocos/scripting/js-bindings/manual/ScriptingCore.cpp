@@ -101,6 +101,7 @@ static std::unordered_map<JSObject*, JSObject*> _js_hook_owner_map;
 
 static char *_js_log_buf = NULL;
 
+//注册的回调
 static std::vector<sc_register_sth> registrationList;
 
 // name ~> JSScript map
@@ -400,12 +401,13 @@ bool JSB_closeWindow(JSContext *cx, uint32_t argc, jsval *vp)
     return true;
 };
 
+// 这里面创建了全局的方法
 void registerDefaultClasses(JSContext* cx, JS::HandleObject global) {
     // first, try to get the ns
     JS::RootedValue nsval(cx);
     JS::RootedObject ns(cx);
     JS_GetProperty(cx, global, "cc", &nsval);
-    // Not exist, create it
+    // Not exist, create it 如果cc不存在就创建它
     if (nsval == JSVAL_VOID)
     {
         ns.set(JS_NewObject(cx, NULL, JS::NullPtr(), JS::NullPtr()));
@@ -562,6 +564,7 @@ bool ScriptingCore::evalString(const char *string)
 
 void ScriptingCore::start()
 {
+	//记录引擎启动的时间
     _engineStartTime = std::chrono::steady_clock::now();
     // for now just this
     createGlobalContext();
@@ -611,6 +614,7 @@ static JSSecurityCallbacks securityCallbacks = {
     NULL
 };
 
+//启动js引擎，设置js引擎的相关参数，执行js脚本jsb_prepare，回调注册的函数
 void ScriptingCore::createGlobalContext() {
     if (_cx && _rt) {
         ScriptingCore::removeAllRoots(_cx);
@@ -1833,6 +1837,7 @@ void SimpleRunLoop::update(float dt)
     size_t messageCount = 0;
     while (true)
     {
+		//上锁
         g_qMutex.lock();
         messageCount = g_queue.size();
         if (messageCount > 0)
@@ -1852,6 +1857,7 @@ void SimpleRunLoop::update(float dt)
     }
 }
 
+//拷贝传进来的字符串，然后调用processInput
 void ScriptingCore::debugProcessInput(const std::string& str)
 {
     JSString* jsstr = JS_NewStringCopyZ(_cx, str.c_str());
